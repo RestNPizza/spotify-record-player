@@ -95,63 +95,10 @@ def run(windowed=False):
                 swipe_start_time = time.time()
                 mx, my = event.pos
 
-                banner_x = (1080 - banner.get_width()) // 2
-                banner_y = 800
-                gap = 51
-                album_w, album_h = (137, 137) if album_img else (0, 0)
-                prev_w, prev_h   = prev_btn.get_width(), prev_btn.get_height()
-                pause_w, pause_h = pause_btn.get_width(), pause_btn.get_height()
-                skip_w, skip_h   = skip_btn.get_width(), skip_btn.get_height()
-                group_width   = album_w + prev_w + pause_w + skip_w + (3 * gap)
-                group_start_x = (1080 - group_width) // 2
-                group_center_y = banner_y + (banner.get_height() // 2) + 30
-                album_x = group_start_x
-                album_y = (group_center_y - (album_h // 2)) - 30
-                prev_x  = album_x + album_w + gap
-                prev_y  = group_center_y - (prev_h // 2)
-                pause_x = prev_x + prev_w + gap
-                pause_y = group_center_y - (pause_h // 2)
-                skip_x  = pause_x + pause_w + gap
-                skip_y  = group_center_y - (skip_h // 2)
+                if math.hypot(mx - center[0], my - center[1]) <= 540:
+                    dragging = True
+                    last_mouse_pos = event.pos
 
-                if prev_x <= mx <= prev_x + prev_w and prev_y <= my <= prev_y + prev_h:
-                    try:
-                        skip_to_previous()
-                    except Exception as e:
-                        print(f"Error skipping to previous track: {e}", file=sys.stderr)
-                    else:
-                        threading.Thread(target=update_details, daemon=True).start()
-                elif pause_x <= mx <= pause_x + pause_w and pause_y <= my <= pause_y + pause_h:
-                    if is_playing:
-                        try:
-                            stop_music()
-                        except Exception as e:
-                            print(f"Error stopping music: {e}", file=sys.stderr)
-                        else:
-                            is_playing = False
-                            angle_speed = 0
-                    else:
-                        try:
-                            start_music()
-                        except Exception as e:
-                            print(f"Error starting music: {e}", file=sys.stderr)
-                        else:
-                            is_playing = True
-                            angle_speed = -0.5
-                elif skip_x <= mx <= skip_x + skip_w and skip_y <= my <= skip_y + skip_h:
-                    try:
-                        skip_to_next()
-                    except Exception as e:
-                        print(f"Error skipping to next track: {e}", file=sys.stderr)
-                    else:
-                        new_path = random.choice(record_files)
-                        record_image = pygame.image.load(str(new_path))
-                        record_image = pygame.transform.scale(record_image, (int(1080 * 1.25), int(1080 * 1.25)))
-                        threading.Thread(target=update_details, daemon=True).start()
-                else:
-                    if math.hypot(mx - center[0], my - center[1]) <= 540:
-                        dragging = True
-                        last_mouse_pos = event.pos
             elif event.type == pygame.MOUSEBUTTONUP and event.button == 1:
                 if swipe_start_pos and swipe_start_time:
                     dx = event.pos[0] - swipe_start_pos[0]
@@ -163,6 +110,7 @@ def run(windowed=False):
                 dragging = False
                 swipe_start_pos = None
                 swipe_start_time = None
+
             elif event.type == pygame.MOUSEMOTION and dragging:
                 dx = event.pos[0] - last_mouse_pos[0]
                 angle -= dx * 0.1
@@ -174,10 +122,13 @@ def run(windowed=False):
         screen.blit(rotated, rotated.get_rect(center=center))
 
         if album_img:
-            label_size = 350
+            label_size = 500
             masked_album = pygame.Surface((label_size, label_size), pygame.SRCALPHA)
             mask = pygame.Surface((label_size, label_size), pygame.SRCALPHA)
-            pygame.draw.circle(mask, (255, 255, 255, 255), (label_size // 2, label_size // 2), label_size // 2)
+
+            pygame.draw.circle(mask, (204, 204, 204, 204), (label_size // 2, label_size // 2), label_size // 2)
+            pygame.draw.circle(mask, (0, 0, 0, 0), (label_size // 2, label_size // 2), 24)
+
             album_scaled = pygame.transform.smoothscale(album_img, (label_size, label_size))
             masked_album.blit(album_scaled, (0, 0))
             masked_album.blit(mask, (0, 0), special_flags=pygame.BLEND_RGBA_MULT)
