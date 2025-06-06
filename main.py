@@ -80,8 +80,8 @@ def run(windowed=False):
 
     swipe_start_pos = None
     swipe_start_time = None
-    SWIPE_DIST  = 100
-    SWIPE_TIME  = 0.5
+    SWIPE_DIST = 100
+    SWIPE_TIME = 0.5
 
     while True:
         for event in pygame.event.get():
@@ -94,6 +94,7 @@ def run(windowed=False):
                 swipe_start_pos = event.pos
                 swipe_start_time = time.time()
                 mx, my = event.pos
+
                 banner_x = (1080 - banner.get_width()) // 2
                 banner_y = 800
                 gap = 51
@@ -170,61 +171,23 @@ def run(windowed=False):
 
         screen.fill((245, 230, 200))
         rotated = pygame.transform.rotate(record_image, angle)
-        rotated_rect = rotated.get_rect(center=center)
-        screen.blit(rotated, rotated_rect)
+        screen.blit(rotated, rotated.get_rect(center=center))
 
         if album_img:
-            label_size = 150
+            label_size = 350
             masked_album = pygame.Surface((label_size, label_size), pygame.SRCALPHA)
             mask = pygame.Surface((label_size, label_size), pygame.SRCALPHA)
             pygame.draw.circle(mask, (255, 255, 255, 255), (label_size // 2, label_size // 2), label_size // 2)
             album_scaled = pygame.transform.smoothscale(album_img, (label_size, label_size))
             masked_album.blit(album_scaled, (0, 0))
             masked_album.blit(mask, (0, 0), special_flags=pygame.BLEND_RGBA_MULT)
-            screen.blit(masked_album, masked_album.get_rect(center=center))
+            rotated_label = pygame.transform.rotate(masked_album, angle)
+            screen.blit(rotated_label, rotated_label.get_rect(center=center))
 
         if is_playing:
             angle = (angle + angle_speed) % 360
 
-        banner_x = (1080 - banner.get_width()) // 2
-        banner_y = 800
-        screen.blit(banner, (banner_x, banner_y))
-
-        gap = 51
-        album_w, album_h = (137, 137) if album_img else (0, 0)
-        prev_w, prev_h   = prev_btn.get_width(), prev_btn.get_height()
-        pause_w, pause_h = pause_btn.get_width(), pause_btn.get_height()
-        skip_w, skip_h   = skip_btn.get_width(), skip_btn.get_height()
-        group_width   = album_w + prev_w + pause_w + skip_w + (3 * gap)
-        group_start_x = (1080 - group_width) // 2
-        group_center_y = banner_y + (banner.get_height() // 2) + 30
-        album_x = group_start_x
-        album_y = (group_center_y - (album_h // 2)) - 30
-        prev_x  = album_x + album_w + gap
-        prev_y  = group_center_y - (prev_h // 2)
-        pause_x = prev_x + prev_w + gap
-        pause_y = group_center_y - (pause_h // 2)
-        skip_x  = pause_x + pause_w + gap
-        skip_y  = group_center_y - (skip_h // 2)
-
-        if album_img:
-            screen.blit(album_img, (album_x, album_y))
-        screen.blit(prev_btn,  (prev_x,  prev_y))
-        screen.blit(pause_btn if is_playing else play_btn, (pause_x, pause_y))
-        screen.blit(skip_btn,  (skip_x,  skip_y))
-
-        if details:
-            song_surf   = font.render(details["title"],  True, (255, 255, 255))
-            artist_surf = font.render(details["artist"], True, (255, 255, 255))
-            pcx = pause_x + pause_w // 2
-            tb  = pause_y - 10
-            ay  = tb - artist_surf.get_height()
-            sy  = ay - 5 - song_surf.get_height()
-            sx  = pcx - (song_surf.get_width()   // 2)
-            ax  = pcx - (artist_surf.get_width() // 2)
-            screen.blit(song_surf,   (sx, sy))
-            screen.blit(artist_surf, (ax, ay))
-
+        screen.blit(banner, ((1080 - banner.get_width()) // 2, 800))
         pygame.display.flip()
 
 if __name__ == "__main__":
