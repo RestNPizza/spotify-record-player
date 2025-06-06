@@ -44,7 +44,7 @@ Required variables:
 
 Optional variables (with defaults):
 
-- `SPOTIFY_REDIRECT_URI` (default: `http://localhost:8888/callback`)
+- `SPOTIFY_REDIRECT_URI` (default: `http://127.0.0.1:8888/callback`)
 - `SPOTIFY_SCOPE` (default: `user-read-currently-playing`)
 
 To configure, create a `.env` file in the project root with:
@@ -53,7 +53,7 @@ To configure, create a `.env` file in the project root with:
 SPOTIFY_CLIENT_ID=your_client_id
 SPOTIFY_CLIENT_SECRET=your_client_secret
 SPOTIFY_USERNAME=your_spotify_username
-SPOTIFY_REDIRECT_URI=http://localhost:8888/callback
+SPOTIFY_REDIRECT_URI=http://127.0.0.1:8888/callback
 SPOTIFY_SCOPE=user-read-currently-playing
 ```
 
@@ -63,7 +63,7 @@ Or export them in your shell:
 export SPOTIFY_CLIENT_ID=your_client_id
 export SPOTIFY_CLIENT_SECRET=your_client_secret
 export SPOTIFY_USERNAME=your_spotify_username
-export SPOTIFY_REDIRECT_URI=http://localhost:8888/callback
+export SPOTIFY_REDIRECT_URI=http://127.0.0.1:8888/callback
 export SPOTIFY_SCOPE=user-read-currently-playing
 ```
 
