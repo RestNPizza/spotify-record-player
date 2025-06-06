@@ -23,7 +23,7 @@ def mask_album_art(img_surface, size=500):
     mask = Image.new('L', (size, size), 0)
     draw = ImageDraw.Draw(mask)
     draw.ellipse((0, 0, size, size), fill=255)
-    center_hole_radius = size // 22
+    center_hole_radius = size // 24
     center = size // 2
     draw.ellipse((center - center_hole_radius, center - center_hole_radius,
                   center + center_hole_radius, center + center_hole_radius), fill=0)
