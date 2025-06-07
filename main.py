@@ -19,7 +19,6 @@ def mask_album_art(img_surface, size=500):
     img = Image.frombytes('RGBA', img_surface.get_size(), raw_str)
     img = img.resize((size, size))
 
-    # Create circular mask with transparent center (record hole)
     mask = Image.new('L', (size, size), 0)
     draw = ImageDraw.Draw(mask)
     draw.ellipse((0, 0, size, size), fill=255)
@@ -28,7 +27,6 @@ def mask_album_art(img_surface, size=500):
     draw.ellipse((center - center_hole_radius, center - center_hole_radius,
                   center + center_hole_radius, center + center_hole_radius), fill=0)
 
-    # Apply mask and reduce opacity
     img.putalpha(mask)
     img = img.convert('RGBA')
     pixels = img.getdata()
@@ -44,6 +42,10 @@ def run(windowed=False):
     screen = pygame.display.set_mode((1080, 1080), flags)
     pygame.display.set_caption("Spotify Record Spinner")
     pygame.mouse.set_visible(False)
+
+    exit_x = 800
+    exit_y = 810
+    exit_size = 20
 
     record_dir = BASE_DIR / 'records'
     record_files = [p for p in record_dir.iterdir() if p.is_file()]
@@ -109,9 +111,7 @@ def run(windowed=False):
                 return
             elif event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
                 mx, my = event.pos
-
-                # Exit if clicked on X
-                if 720 <= mx <= 750 and 810 <= my <= 840:
+                if exit_x <= mx <= exit_x + exit_size and exit_y <= my <= exit_y + exit_size:
                     pygame.quit()
                     sys.exit()
 
@@ -130,7 +130,6 @@ def run(windowed=False):
                 prev_x = group_start_x + album_w + gap
                 pause_x = prev_x + prev_w + gap
                 skip_x = pause_x + pause_w + gap
-
                 prev_y = pause_y = skip_y = group_center_y - (pause_btn.get_height() // 2)
 
                 if prev_x <= mx <= prev_x + prev_w and prev_y <= my <= prev_y + prev_btn.get_height():
@@ -151,6 +150,7 @@ def run(windowed=False):
                     record_image = pygame.image.load(str(new_path)).convert_alpha()
                     record_image = pygame.transform.scale(record_image, (int(1080 * 1.25), int(1080 * 1.25)))
                     threading.Thread(target=update_details, daemon=True).start()
+
             elif event.type == pygame.MOUSEBUTTONUP and event.button == 1:
                 dragging = False
             elif event.type == pygame.MOUSEMOTION and dragging:
@@ -160,7 +160,6 @@ def run(windowed=False):
                 last_mouse_pos = event.pos
 
         screen.fill((245, 230, 200))
-
         rotated = pygame.transform.rotate(record_image, angle)
         screen.blit(rotated, rotated.get_rect(center=center))
         if masked_album_surface:
@@ -173,10 +172,9 @@ def run(windowed=False):
         banner_y = 800
         screen.blit(banner, (banner_x, banner_y))
 
-        # Draw the 'X' button (smaller and moved left)
-        pygame.draw.rect(screen, (200, 200, 200), (800, 810, 20, 20))
-        pygame.draw.line(screen, (0, 0, 0), (802, 812), (818, 828), 2)
-        pygame.draw.line(screen, (0, 0, 0), (818, 812), (802, 828), 2)
+        pygame.draw.rect(screen, (200, 200, 200), (exit_x, exit_y, exit_size, exit_size))
+        pygame.draw.line(screen, (0, 0, 0), (exit_x + 2, exit_y + 2), (exit_x + exit_size - 2, exit_y + exit_size - 2), 2)
+        pygame.draw.line(screen, (0, 0, 0), (exit_x + exit_size - 2, exit_y + 2), (exit_x + 2, exit_y + exit_size - 2), 2)
 
         gap = 51
         album_w, album_h = (137, 137) if album_img else (0, 0)
