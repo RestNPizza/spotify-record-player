@@ -175,8 +175,8 @@ def run(windowed=False):
 
         # Draw the 'X' button (smaller and moved left)
         pygame.draw.rect(screen, (200, 200, 200), (800, 810, 20, 20))
-        pygame.draw.line(screen, (0, 0, 0), (722, 812), (748, 838), 2)
-        pygame.draw.line(screen, (0, 0, 0), (748, 812), (722, 838), 2)
+        pygame.draw.line(screen, (0, 0, 0), (802, 812), (818, 828), 2)
+        pygame.draw.line(screen, (0, 0, 0), (818, 812), (802, 828), 2)
 
         gap = 51
         album_w, album_h = (137, 137) if album_img else (0, 0)
