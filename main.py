@@ -1,3 +1,4 @@
+
 import pygame
 import os
 import random
@@ -13,13 +14,11 @@ from PIL import Image, ImageDraw
 
 BASE_DIR = Path(__file__).resolve().parent
 
-
 def mask_album_art(img_surface, size=500):
     raw_str = pygame.image.tostring(img_surface, 'RGBA', False)
     img = Image.frombytes('RGBA', img_surface.get_size(), raw_str)
     img = img.resize((size, size))
 
-    # Create circular mask with transparent center (record hole)
     mask = Image.new('L', (size, size), 0)
     draw = ImageDraw.Draw(mask)
     draw.ellipse((0, 0, size, size), fill=255)
@@ -28,7 +27,6 @@ def mask_album_art(img_surface, size=500):
     draw.ellipse((center - center_hole_radius, center - center_hole_radius,
                   center + center_hole_radius, center + center_hole_radius), fill=0)
 
-    # Apply mask and reduce opacity
     img.putalpha(mask)
     img = img.convert('RGBA')
     pixels = img.getdata()
@@ -36,7 +34,6 @@ def mask_album_art(img_surface, size=500):
     img.putdata(new_pixels)
 
     return pygame.image.fromstring(img.tobytes(), img.size, img.mode)
-
 
 def run(windowed=False):
     pygame.init()
@@ -110,6 +107,13 @@ def run(windowed=False):
                 return
             elif event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
                 mx, my = event.pos
+
+                # Check for X button click
+                x_button_rect = pygame.Rect(1020, 810, 40, 40)
+                if x_button_rect.collidepoint(mx, my):
+                    pygame.quit()
+                    sys.exit()
+
                 dragging = math.hypot(mx - center[0], my - center[1]) <= 540
                 last_mouse_pos = event.pos
 
@@ -169,6 +173,11 @@ def run(windowed=False):
         banner_y = 800
         screen.blit(banner, (banner_x, banner_y))
 
+        # Draw X exit button
+        pygame.draw.rect(screen, (60, 60, 60), (1020, 810, 40, 40), border_radius=5)
+        pygame.draw.line(screen, (255, 255, 255), (1025, 815), (1055, 845), 3)
+        pygame.draw.line(screen, (255, 255, 255), (1055, 815), (1025, 845), 3)
+
         gap = 51
         album_w, album_h = (137, 137) if album_img else (0, 0)
         prev_w, pause_w, skip_w = prev_btn.get_width(), pause_btn.get_width(), skip_btn.get_width()
@@ -202,7 +211,6 @@ def run(windowed=False):
             screen.blit(artist_surf, (ax, ay))
 
         pygame.display.flip()
-
 
 if __name__ == "__main__":
     import argparse
