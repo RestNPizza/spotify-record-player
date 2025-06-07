@@ -174,7 +174,7 @@ def run(windowed=False):
         screen.blit(banner, (banner_x, banner_y))
 
         # Draw the 'X' button (smaller and moved left)
-        pygame.draw.rect(screen, (200, 200, 200), (720, 810, 30, 30))
+        pygame.draw.rect(screen, (200, 200, 200), (800, 810, 20, 20))
         pygame.draw.line(screen, (0, 0, 0), (722, 812), (748, 838), 2)
         pygame.draw.line(screen, (0, 0, 0), (748, 812), (722, 838), 2)
 
